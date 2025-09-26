@@ -57,7 +57,7 @@ class SmartcarOAuth2FlowHandler(AbstractOAuth2FlowHandler, domain=DOMAIN):  # ty
             [
                 cast("Scope", scope)
                 for scope, selected in self.scope_data.items()
-                if selected
+                if selected and scope not in {CONF_USE_IMPERIAL, "options_complete"}
             ]
         )
 

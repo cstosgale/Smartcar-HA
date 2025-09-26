@@ -1,6 +1,7 @@
 from collections.abc import Mapping
 from typing import Any
 
+
 def unique_id_from_entry_data(data: dict) -> str:
     return " ".join(sorted(data["vehicles"].keys())).lower()
 
