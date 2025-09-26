@@ -182,7 +182,7 @@ async def async_setup_entry(  # noqa: RUF029
         entry.runtime_data.coordinators
     )
     _LOGGER.debug("Setting up sensors for VINs: %s", list(coordinators.keys()))
-    entities = [
+    entities: list[SmartcarSensor] = [
         SmartcarSensor(coordinator, description)
         for coordinator in coordinators.values()
         for description in SENSOR_TYPES

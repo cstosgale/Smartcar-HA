@@ -3,6 +3,7 @@ from enum import StrEnum, auto
 DOMAIN = "smartcar"
 DEFAULT_NAME = "Smartcar"
 API_HOST = "https://api.smartcar.com"
+CONF_USE_IMPERIAL = "use_imperial"
 
 PLATFORMS = [
     "sensor",

@@ -13,6 +13,7 @@ from . import populate_entry_data, vehicle_vins_in_use
 from .auth_impl import AccessTokenAuthImpl
 from .const import (
     API_HOST,
+    CONF_USE_IMPERIAL,
     CONFIGURABLE_SCOPES,
     DEFAULT_NAME,
     DEFAULT_SCOPES,
@@ -70,6 +71,13 @@ class SmartcarOAuth2FlowHandler(AbstractOAuth2FlowHandler, domain=DOMAIN):  # ty
         # add in a step for scope selection if that hasn't been done yet
         if self.scope_data is None:
             return await self.async_step_scopes()
+        assert self.scope_data is not None
+
+        if self.scope_data is not None:
+            scope_data = self.scope_data
+            if not scope_data.get("options_complete"):
+                return await self.async_step_options()
+
         return await super().async_step_auth(user_input)
 
     async def async_step_reauth(
@@ -141,10 +149,37 @@ class SmartcarOAuth2FlowHandler(AbstractOAuth2FlowHandler, domain=DOMAIN):  # ty
             last_step=False,
         )
 
+    async def async_step_options(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle options selection.
+
+        Returns:
+            The config flow result.
+        """
+        if user_input is not None:
+            assert self.scope_data is not None
+            self.scope_data.update(user_input)
+            self.scope_data["options_complete"] = True
+            return await self.async_step_auth()
+
+        return self.async_show_form(
+            step_id="options",
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(CONF_USE_IMPERIAL, default=False): bool,
+                }
+            ),
+            last_step=False,
+        )
+
     async def async_oauth_create_entry(self, data: dict) -> ConfigFlowResult:
         session = async_get_clientsession(self.hass)
         token = data[CONF_TOKEN][CONF_ACCESS_TOKEN]
         auth = AccessTokenAuthImpl(session, token, API_HOST)
+
+        assert self.scope_data is not None
+        data[CONF_USE_IMPERIAL] = self.scope_data.get(CONF_USE_IMPERIAL)
 
         try:
             await populate_entry_data(
@@ -180,7 +215,7 @@ class SmartcarOAuth2FlowHandler(AbstractOAuth2FlowHandler, domain=DOMAIN):  # ty
         if duplicate_vins:
             return self.async_abort(
                 reason="duplicate_vehicles",
-                description_placeholders={"vins": duplicate_vins},
+                description_placeholders={"vins": ", ".join(duplicate_vins)},
             )
 
         if self.source == SOURCE_REAUTH:

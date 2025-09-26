@@ -27,6 +27,12 @@
             "no_scopes": "At least one scope needs to be selected"
         },
         "step": {
+            "options": {
+                "data": {
+                    "use_imperial": "Use imperial units for distance and pressure"
+                },
+                "title": "Options"
+            },
             "pick_implementation": {
                 "title": "Pick authentication method"
             },

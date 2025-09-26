@@ -180,7 +180,7 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
 
 
 def vehicle_vins_in_use(
-    hass: HomeAssistant, config_entry: ConfigEntry = None
+    hass: HomeAssistant, config_entry: ConfigEntry | None = None
 ) -> set[str]:
     return {
         vehicle["vin"]
