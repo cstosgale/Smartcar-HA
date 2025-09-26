@@ -21,8 +21,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 from homeassistant.util.unit_conversion import DistanceConverter, PressureConverter
+from typing import Any, Callable
 
-from .const import EntityDescriptionKey
+from .const import CONF_USE_IMPERIAL, EntityDescriptionKey
 from .coordinator import SmartcarVehicleCoordinator
 from .entity import SmartcarEntity, SmartcarEntityDescription
 
@@ -32,6 +33,10 @@ _LOGGER = logging.getLogger(__name__)
 @dataclass(frozen=True, kw_only=True)
 class SmartcarSensorDescription(SensorEntityDescription, SmartcarEntityDescription):
     """Class describing Smartcar sensor entities."""
+
+    imperial_unit_of_measurement: str | None = None
+    to_native_conversion: Callable[[Any], Any] | None = None
+    from_native_conversion: Callable[[Any], Any] | None = None
 
 
 SENSOR_TYPES: tuple[SmartcarSensorDescription, ...] = (
@@ -73,8 +78,12 @@ SENSOR_TYPES: tuple[SmartcarSensorDescription, ...] = (
         icon="mdi:gas-station",
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=UnitOfVolume.LITERS,
-        imperial_conversion=lambda v: DistanceConverter.convert(
+        imperial_unit_of_measurement=UnitOfVolume.GALLONS,
+        to_native_conversion=lambda v: DistanceConverter.convert(
             v, UnitOfVolume.GALLONS, UnitOfVolume.LITERS
+        ),
+        from_native_conversion=lambda v: DistanceConverter.convert(
+            v, UnitOfVolume.LITERS, UnitOfVolume.GALLONS
         ),
     ),
     SmartcarSensorDescription(
@@ -94,8 +103,12 @@ SENSOR_TYPES: tuple[SmartcarSensorDescription, ...] = (
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=UnitOfLength.KILOMETERS,
-        imperial_conversion=lambda v: DistanceConverter.convert(
+        imperial_unit_of_measurement=UnitOfLength.MILES,
+        to_native_conversion=lambda v: DistanceConverter.convert(
             v, UnitOfLength.MILES, UnitOfLength.KILOMETERS
+        ),
+        from_native_conversion=lambda v: DistanceConverter.convert(
+            v, UnitOfLength.KILOMETERS, UnitOfLength.MILES
         ),
     ),
     SmartcarSensorDescription(
@@ -105,8 +118,12 @@ SENSOR_TYPES: tuple[SmartcarSensorDescription, ...] = (
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.TOTAL_INCREASING,
         native_unit_of_measurement=UnitOfLength.KILOMETERS,
-        imperial_conversion=lambda v: DistanceConverter.convert(
+        imperial_unit_of_measurement=UnitOfLength.MILES,
+        to_native_conversion=lambda v: DistanceConverter.convert(
             v, UnitOfLength.MILES, UnitOfLength.KILOMETERS
+        ),
+        from_native_conversion=lambda v: DistanceConverter.convert(
+            v, UnitOfLength.KILOMETERS, UnitOfLength.MILES
         ),
     ),
     SmartcarSensorDescription(
@@ -117,8 +134,12 @@ SENSOR_TYPES: tuple[SmartcarSensorDescription, ...] = (
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=UnitOfLength.KILOMETERS,
-        imperial_conversion=lambda v: DistanceConverter.convert(
+        imperial_unit_of_measurement=UnitOfLength.MILES,
+        to_native_conversion=lambda v: DistanceConverter.convert(
             v, UnitOfLength.MILES, UnitOfLength.KILOMETERS
+        ),
+        from_native_conversion=lambda v: DistanceConverter.convert(
+            v, UnitOfLength.KILOMETERS, UnitOfLength.MILES
         ),
     ),
     SmartcarSensorDescription(
@@ -129,8 +150,12 @@ SENSOR_TYPES: tuple[SmartcarSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
         native_unit_of_measurement=UnitOfPressure.KPA,
-        imperial_conversion=lambda v: PressureConverter.convert(
+        imperial_unit_of_measurement=UnitOfPressure.PSI,
+        to_native_conversion=lambda v: PressureConverter.convert(
             v, UnitOfPressure.PSI, UnitOfPressure.KPA
+        ),
+        from_native_conversion=lambda v: PressureConverter.convert(
+            v, UnitOfPressure.KPA, UnitOfPressure.PSI
         ),
     ),
     SmartcarSensorDescription(
@@ -141,8 +166,12 @@ SENSOR_TYPES: tuple[SmartcarSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
         native_unit_of_measurement=UnitOfPressure.KPA,
-        imperial_conversion=lambda v: PressureConverter.convert(
+        imperial_unit_of_measurement=UnitOfPressure.PSI,
+        to_native_conversion=lambda v: PressureConverter.convert(
             v, UnitOfPressure.PSI, UnitOfPressure.KPA
+        ),
+        from_native_conversion=lambda v: PressureConverter.convert(
+            v, UnitOfPressure.KPA, UnitOfPressure.PSI
         ),
     ),
     SmartcarSensorDescription(
@@ -153,8 +182,12 @@ SENSOR_TYPES: tuple[SmartcarSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
         native_unit_of_measurement=UnitOfPressure.KPA,
-        imperial_conversion=lambda v: PressureConverter.convert(
+        imperial_unit_of_measurement=UnitOfPressure.PSI,
+        to_native_conversion=lambda v: PressureConverter.convert(
             v, UnitOfPressure.PSI, UnitOfPressure.KPA
+        ),
+        from_native_conversion=lambda v: PressureConverter.convert(
+            v, UnitOfPressure.KPA, UnitOfPressure.PSI
         ),
     ),
     SmartcarSensorDescription(
@@ -165,8 +198,12 @@ SENSOR_TYPES: tuple[SmartcarSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
         native_unit_of_measurement=UnitOfPressure.KPA,
-        imperial_conversion=lambda v: PressureConverter.convert(
+        imperial_unit_of_measurement=UnitOfPressure.PSI,
+        to_native_conversion=lambda v: PressureConverter.convert(
             v, UnitOfPressure.PSI, UnitOfPressure.KPA
+        ),
+        from_native_conversion=lambda v: PressureConverter.convert(
+            v, UnitOfPressure.KPA, UnitOfPressure.PSI
         ),
     ),
 )
@@ -199,6 +236,38 @@ class SmartcarSensor[ValueT, RawValueT](
 
     _attr_has_entity_name = True
 
+    def __init__(
+        self,
+        coordinator: SmartcarVehicleCoordinator,
+        description: SmartcarSensorDescription,
+    ) -> None:
+        super().__init__(coordinator, description)
+        self.entity_description: SmartcarSensorDescription = description
+
+        self._use_imperial = coordinator.config_entry.data.get(CONF_USE_IMPERIAL, False)
+
+        if self._use_imperial and description.imperial_unit_of_measurement:
+            self._attr_native_unit_of_measurement = (
+                description.imperial_unit_of_measurement
+            )
+        else:
+            self._attr_native_unit_of_measurement = (
+                description.native_unit_of_measurement
+            )
+
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
         return self._extract_value()
+
+    def _extract_value(self) -> ValueT | None:
+        value = self._extract_raw_value()
+
+        if value is None:
+            return None
+
+        if self._use_imperial and self.entity_description.from_native_conversion:
+            return self.entity_description.from_native_conversion(value)
+        if not self._use_imperial and self.entity_description.to_native_conversion:
+            return self.entity_description.to_native_conversion(value)
+
+        return value

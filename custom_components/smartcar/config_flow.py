@@ -7,6 +7,7 @@ from homeassistant.config_entries import SOURCE_REAUTH, ConfigFlowResult
 from homeassistant.const import CONF_ACCESS_TOKEN, CONF_TOKEN
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.config_entry_oauth2_flow import AbstractOAuth2FlowHandler
+from homeassistant.helpers import selector
 import voluptuous as vol
 
 from . import populate_entry_data, vehicle_vins_in_use
@@ -167,7 +168,9 @@ class SmartcarOAuth2FlowHandler(AbstractOAuth2FlowHandler, domain=DOMAIN):  # ty
             step_id="options",
             data_schema=vol.Schema(
                 {
-                    vol.Optional(CONF_USE_IMPERIAL, default=False): bool,
+                    vol.Optional(
+                        CONF_USE_IMPERIAL, default=False
+                    ): selector.BooleanSelector(selector.BooleanSelectorConfig()),
                 }
             ),
             last_step=False,
